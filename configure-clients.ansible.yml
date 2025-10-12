@@ -1,0 +1,25 @@
+---
+- name: Configure Client machines
+  hosts: "{{ variable_host | default('clients')}}"
+  vars_files:
+    - /vars/vars.yml
+  
+  pre_tasks:
+  - debug:
+      msg: I execute before roles
+      
+      
+ # - name: Check whether a package called foobar is installed
+ #   ansible.builtin.debug:
+ #     msg: "{{ ansible_facts.packages['pycharm'] | length }} versions of pycharm are installed!"
+ #   when: "'pycharm' in ansible_facts.packages"
+    
+    
+  roles:
+    - package_gather_facts
+    - package_flatpak_configuration
+    - application-vscode
+
+  post_tasks:
+  - debug:
+      msg: I execute after roles
