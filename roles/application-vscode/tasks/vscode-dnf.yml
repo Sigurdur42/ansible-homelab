@@ -1,27 +1,37 @@
 ---
+- name: Check for installed package
+  set_fact:
+    vscode_installed: "{{ (ansible_facts.packages[vscode_package_name] | length) == true }} "
 
-- name: Import Microsoft GPG Key (Fedora)
-  become: yes
-  become_method: sudo
-  ansible.builtin.rpm_key:
-    key: https://packages.microsoft.com/keys/microsoft.asc
-    state: present
-
-- name: Add Visual Studio Code Repo (Fedora)
-  become: yes
-  become_method: sudo
-  ansible.builtin.yum_repository:
-    name: vscode
-    description: Visual Studio Code
-    baseurl: https://packages.microsoft.com/yumrepos/vscode
-    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
-    gpgcheck: true
-    enabled: true
+- name: Check for installed package
+  ansible.builtin.debug:
+    msg: "vscode is installed: {{ vscode_installed }}"
 
 
-- name: Install VS Code (Fedora)
-  become: yes
-  become_method: sudo
-  ansible.builtin.dnf:
-    name: code
-    state: present
+- name: Install VSCode on dnf
+  when: vscode_installed == False
+  block:
+  - name: Import Microsoft GPG Key (Fedora)
+    become: yes
+    become_method: sudo
+    ansible.builtin.rpm_key:
+      key: https://packages.microsoft.com/keys/microsoft.asc
+      state: present
+  
+  - name: Add Visual Studio Code Repo (Fedora)
+    become: yes
+    become_method: sudo
+    ansible.builtin.yum_repository:
+      name: vscode
+      description: Visual Studio Code
+      baseurl: https://packages.microsoft.com/yumrepos/vscode
+      gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+      gpgcheck: true
+      enabled: true
+  
+  - name: Install VS Code (Fedora)
+    become: yes
+    become_method: sudo
+    ansible.builtin.dnf:
+      name: code
+      state: present

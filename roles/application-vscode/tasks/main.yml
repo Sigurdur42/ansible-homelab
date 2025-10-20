@@ -4,16 +4,16 @@
 # TODO:
 # Stelle sicher, dass package_manager_short_name existiert und nicht leer ist.
 
-- name: Check for installed package
+- name: Get vscode package name
   set_fact:
-    vscode_installed: "{{ (ansible_facts.packages['code'] | length) == true }} "
-
-- name: Check for installed package
+    vscode_package_name: "{{ vars['vscode-package-name-' + package_manager_short_name] }}"
+    
+- name: Check for installed package  - found
   ansible.builtin.debug:
-    msg: "vscode is installed: {{ vscode_installed }}"
+    msg: "found: {{ vscode_package_name }}"
 
 - name: Install vscode
   ansible.builtin.include_tasks: "vscode-{{ package_manager_short_name }}.yml"
-  when: vscode_installed == False
+
   
     

@@ -1,3 +1,7 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # vars file for application-vscode
+
+vscode-package-name-pac: visual-studio-code-bin
+vscode-package-name-apt: code
+vscode-package-name-dnf: code

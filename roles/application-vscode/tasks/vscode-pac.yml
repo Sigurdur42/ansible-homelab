@@ -1,0 +1,39 @@
+---
+
+
+- name: Install VSCode on arch
+  become: true
+  become_method: sudo
+  block:
+  - name: Install yay if needed (required for AUR access)
+    community.general.pacman:
+      name: yay
+      state: present
+
+  # TODO: Move this to a separate role?
+  - name: Create the `aur_builder` user
+    become: yes
+    ansible.builtin.user:
+      name: aur_builder
+      create_home: yes
+      group: wheel
+  
+  - name: Allow the `aur_builder` user to run `sudo pacman` without a password
+    become: yes
+    ansible.builtin.lineinfile:
+      path: /etc/sudoers.d/11-install-aur_builder
+      line: 'aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman'
+      create: yes
+      mode: 0644
+      validate: 'visudo -cf %s'
+
+
+      
+  - name: Install vscode from AUR
+    become: yes
+    become_user: aur_builder
+    kewlfft.aur.aur:
+      name: visual-studio-code-bin
+      use: makepkg
+      state: present
+      

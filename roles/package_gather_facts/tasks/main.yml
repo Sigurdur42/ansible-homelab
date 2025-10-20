@@ -4,15 +4,13 @@
   ansible.builtin.package_facts:
     manager: auto
     
-    
 - name: Detect package manager
   set_fact:
     package_manager_short_name: "{{ ansible_pkg_mgr [:3] }}"
 
 - name: Stored package manager in <package_manager_short_name>
   debug:
-    msg: "Package mg: {{ package_manager_short_name }}"
-
+    msg: "Package mgr: {{ package_manager_short_name }}"
 
   # TODO: Collect some data and store in variables for 
     # easier access
