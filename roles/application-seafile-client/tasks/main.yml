@@ -1,0 +1,56 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for application-seafile-client
+
+- name: Install Seafile Desktop and Drive Client
+  block:
+    - name: Prepare download location
+      ansible.builtin.file:
+        path: "{{ seafile_installation_dir }}"
+        state: directory
+        
+    - name: Get client name
+      set_fact:
+        internal_seafile_client: "{{ (vars['seafile_installation_dir'], vars['seafile_installation_desktop_name']) | path_join }}"     
+        
+    - name: Get drive name
+      set_fact:
+        internal_seafile_drive: "{{ (vars['seafile_installation_dir'], vars['seafile_installation_drive_name']) | path_join }}"
+    
+    - name: dump found seafile names
+      ansible.builtin.debug:
+        msg: "found: client: <{{ internal_seafile_client }}> drive: <{{ internal_seafile_drive }}> "   
+        
+    
+    - name: lookup existing client download
+      register: stat_internal_seafile_client
+      ansible.builtin.stat:        
+        path: "{{ internal_seafile_client }}"
+            
+    - name: lookup existing drive download
+      register: stat_internal_seafile_drive
+      ansible.builtin.stat:
+        path: "{{ internal_seafile_drive }}"
+          
+    - name: Download client
+      when: not stat_internal_seafile_client.stat.exists
+      ansible.builtin.get_url:
+        url: https://s3.eu-central-1.amazonaws.com/download.seadrive.org/Seafile-x86_64-9.0.15.AppImage
+        dest: "{{ internal_seafile_client }}"
+        mode: "u=rwx,g=r,o=r"
+          
+    - name: Download drive
+      when: not stat_internal_seafile_drive.stat.exists
+      ansible.builtin.get_url:
+        url: https://s3.eu-central-1.amazonaws.com/download.seadrive.org/SeaDrive-x86_64-3.0.16.AppImage
+        dest: "{{ internal_seafile_drive }}"
+        mode: "u=rwx,g=r,o=r"
+        
+    - name: Add missing dependencies
+      become: true
+      # when: not stat_internal_seafile_client.stat.exists
+      ansible.builtin.package:
+        name: 
+          - fuse
+          - python-fuse
+        state: present

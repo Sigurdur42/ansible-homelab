@@ -19,6 +19,7 @@
     - package_gather_facts
     - package_flatpak_configuration
     - application-vscode
+    - application-seafile-client
 
   post_tasks:
   - debug:
