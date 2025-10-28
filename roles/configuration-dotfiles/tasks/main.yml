@@ -1,0 +1,43 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for configuration-dotfiles
+
+- name: install stow
+  become: true
+  ansible.builtin.package:
+    name: 
+      - stow
+      - git
+      - rclone
+    state: present
+
+- name: password
+  ansible.builtin.debug:
+    msg: "{{ dotfiles_github_password }}"
+
+- name: clone dotfiles repo
+  ansible.builtin.git:
+    repo: "https://{{ dotfiles_github_password }}@{{ dotfiles_github_repo_url }}"
+    dest: ~/dotfiles
+    
+- name: run stow in dotfiles
+  ansible.builtin.command:
+    chdir: ~/dotfiles
+    argv:
+      - stow
+      - all
+
+- name: copy required binaries to local
+  ansible.builtin.command:
+    chdir: ~
+    argv:
+      - rclone
+      - -vv
+      - copy
+      - seafile:ansible-binaries
+      - ~/ansible-binaries
+  register: rclone_output
+    
+- name: rclone output
+  ansible.builtin.debug:
+    msg: "{{ rclone_output }}"  

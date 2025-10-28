@@ -2,7 +2,7 @@
 - name: Configure Client machines
   hosts: "{{ variable_host | default('clients')}}"
   vars_files:
-    - /vars/vars.yml
+    - ./vars/vars.yml
   
   pre_tasks:
   - debug:
@@ -18,6 +18,7 @@
   roles:
     - package_gather_facts
     - package_flatpak_configuration
+    - configuration-dotfiles      
     - application-vscode
     - application-seafile-client
 

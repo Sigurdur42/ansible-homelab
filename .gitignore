@@ -1,0 +1,4 @@
+
+# This file will contain the ansible vault passwords
+# It will not be committed due to security constraints
+secrets.pass
